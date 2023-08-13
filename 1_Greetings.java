@@ -1,0 +1,14 @@
+import java.util.*;
+
+class Greetings{
+
+    public static void main(String args[]){
+        Scanner scan = new Scanner(System.in);
+
+        System.out.println("Enter your name: ");
+        String name = scan.nextLine();
+
+        System.out.println("Hello...! " + name + "...! Greetings ! And welcome to the Java Lab.");
+
+    }
+}
