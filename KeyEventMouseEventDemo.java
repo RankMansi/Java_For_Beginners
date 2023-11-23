@@ -17,12 +17,12 @@ public class KeyEventMouseEventDemo {
             @Override
             public void keyPressed(KeyEvent e) {
                 int keyCode = e.getKeyCode();
-                eventLabel.setText("Key Pressed: " + KeyEvent.getKeyText(keyCode));
+                eventLabel.setText("Key Pressed: " + e.getKeyText(keyCode));
             }
             @Override
             public void keyReleased(KeyEvent e) {
                 int keyCode = e.getKeyCode();
-                eventLabel.setText("Key Released: " + KeyEvent.getKeyText(keyCode));
+                eventLabel.setText("Key Released: " + e.getKeyText(keyCode));
             }
         });
         frame.addMouseListener(new MouseAdapter() {
