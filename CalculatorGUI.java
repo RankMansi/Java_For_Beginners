@@ -1,78 +1,105 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-class CalculatorGUI extends JFrame implements ActionListener {
-    JLabel lblNumber1 = new JLabel("Number 1 : ");
-    JLabel lblNumber2 = new JLabel("Number 2 : ");
-    JLabel lblAnswer = new JLabel("Answer : ");
-    JLabel lblStatus = new JLabel();
+public class CalculatorGUI {
+    private JFrame frame;
+    private JPanel panel;
+    private JTextField display;
+    private String operator;
+    private double num1, num2;
 
-    JTextField txtNumber1 = new JTextField();
-    JTextField txtNumber2 = new JTextField();
-    JTextField txtAnswer = new JTextField();
+    public CalculatorGUI() {
+        frame = new JFrame("Calculator");
+        frame.setLayout(new BorderLayout());
 
-    JButton btnAdd = new JButton("+");
-    JButton btnSub = new JButton("-");
-    JButton btnMul = new JButton("*");
-    JButton btnClear = new JButton("CLEAR");
+        panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 4));
 
-    public CalculatorGUI(String Title) {
-        super(Title);
-        setSize(300, 300);
+        display = new JTextField(20);
+        display.setEditable(false);
+        display.setHorizontalAlignment(JTextField.RIGHT);
 
-        JPanel dataIO = new JPanel(new GridLayout(3, 2));
-        dataIO.add(lblNumber1);
-        dataIO.add(txtNumber1);
-        dataIO.add(lblNumber2);
-        dataIO.add(txtNumber2);
-        dataIO.add(lblAnswer);
-        dataIO.add(txtAnswer);
+        frame.add(display, BorderLayout.NORTH);
+        frame.add(panel, BorderLayout.CENTER);
 
-        btnAdd.addActionListener(this);
-        btnSub.addActionListener(this);
-        btnMul.addActionListener(this);
-        btnClear.addActionListener(this);
+        createButtons();
+        addActionListeners();
 
-        JPanel math = new JPanel(new FlowLayout());
-        math.add(btnAdd);
-        math.add(btnSub);
-        math.add(btnMul);
-        math.add(btnClear);
-
-        add(dataIO, BorderLayout.NORTH);
-        add(math, BorderLayout.SOUTH);
-        add(lblStatus, BorderLayout.CENTER);
-
-        setVisible(true);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 300);
+        frame.setVisible(true);
     }
 
-    public void actionPerformed(ActionEvent ae) {
-        int number1 = Integer.parseInt(txtNumber1.getText());
-        int number2 = Integer.parseInt(txtNumber2.getText());
+    private void createButtons() {
+        String[] buttonLabels = {
+                "7", "8", "9", "/",
+                "4", "5", "6", "*",
+                "1", "2", "3", "-",
+                "0", ".", "=", "+", "C"
+        };
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            panel.add(button);
+        }
+    }
 
-        if (ae.getSource() == btnAdd) {
-            int ans = number1 + number2;
-            txtAnswer.setText(String.valueOf(ans));
-            lblStatus.setText(number1 + " + " + number2 + " = " + ans);
-        } else if (ae.getSource() == btnSub) {
-            int ans = number1 - number2;
-            txtAnswer.setText(String.valueOf(ans));
-            lblStatus.setText(number1 + " - " + number2 + " = " + ans);
-        } else if (ae.getSource() == btnMul) {
-            int ans = number1 * number2;
-            txtAnswer.setText(String.valueOf(ans));
-            lblStatus.setText(number1 + " * " + number2 + " = " + ans);
-        } else if (ae.getSource() == btnClear) {
-            txtAnswer.setText("");
-            txtNumber1.setText("");
-            txtNumber2.setText("");
-            lblStatus.setText("CLEARED!!");
+    private void addActionListeners() {
+        Component[] components = panel.getComponents();
+        for (Component component : components) {
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                button.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        String text = button.getText();
+                        if (text.matches("[0-9.]")) {
+                            display.setText(display.getText() + text);
+                        } else if (text.matches("[+\\-*/]")) {
+                            if (operator == null) {
+                                num1 = Double.parseDouble(display.getText());
+                                operator = text;
+                                display.setText("");
+                            }
+                        } else if (text.equals("=")) {
+                            if (operator != null) {
+                                num2 = Double.parseDouble(display.getText());
+                                switch (operator) {
+                                    case "+":
+                                        display.setText(String.valueOf(num1 + num2));
+                                        break;
+                                    case "-":
+                                        display.setText(String.valueOf(num1 - num2));
+                                        break;
+                                    case "*":
+                                        display.setText(String.valueOf(num1 * num2));
+                                        break;
+                                    case "/":
+                                        if (num2 != 0) {
+                                            display.setText(String.valueOf(num1 / num2));
+                                        } else {
+                                            display.setText("Error");
+                                        }
+                                        break;
+                                }
+                                operator = null;
+                            }
+                        } else if (text.equals("C")) {
+                            display.setText("");
+                            operator = null;
+                        }
+                    }
+                });
+            }
         }
     }
 
     public static void main(String[] args) {
-        CalculatorGUI m = new CalculatorGUI("MATH-CALCULATOR!!");
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new CalculatorGUI();
+            }
+        });
     }
 }
